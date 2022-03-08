@@ -79,8 +79,8 @@ def enter_enviroment_variables():
     os.environ['ACCESS_SECRET'] = input("Please Enter your Access Token Secret: ")    
 
     os.environ['BEARER_TOKEN'] = input("Please Enter the your Bearer Token: ")
-    
-def get_tweets(twitter_username):
+
+def get_client():
     # Accessing our Enviroment variables.
     access_token = os.getenv('ACCESS_TOKEN')
     access_token_secret = os.getenv('ACCESS_SECRET')
@@ -96,8 +96,24 @@ def get_tweets(twitter_username):
                             access_token_secret=access_token_secret, 
                             return_type = requests.Response,
                             wait_on_rate_limit=True)
-        
-    # dynamically grab user id.
+    return client
+
+# Get the ID from the username.
+def get_id(client, username):
+    # Use the get_user function to grab the information.
+    user_info = client.get_user(username=username)
+    # Filter out the specific ID that we need.
+    id = user_info.id_str
+
+    return id
+    
+def get_tweets(twitter_username):
+
+    # Call the function to authenticate us with the Twitter API.
+    client = get_client()
+    
+    # Call the fucntion to grab the user ID from the username.
+    user_id = get_id(client, twitter_username)
 
     # Send the request to the api for the users recent tweets.
     # Academic access is required to do it any other way. We can grab up to 100 tweets.
@@ -112,14 +128,10 @@ def get_tweets(twitter_username):
     # Extract the "data" value from the dictionary.
     tweets_data = tweets_dict['data'] 
 
-    for tweet in tweets:
-        print(tweet.user.location)
-
     # Transform to pandas Dataframe, to make it more readable.
     df = pd.json_normalize(tweets_data)
 
-    #print(df)
-    
+    print(df)
 
 if __name__ == "__main__":
 
