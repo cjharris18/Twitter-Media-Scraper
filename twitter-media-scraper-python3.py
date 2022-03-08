@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Geosearch Mapper v1.0
+Twitter Media Scraper Python3 v1.0
 Created by Chris Harris
 cjharris.co.uk
 GitHub: cjharris18
@@ -9,8 +9,6 @@ GitHub: cjharris18
 
 import argparse
 import os
-from unittest.util import strclass
-from sqlalchemy import false
 import tweepy
 import pandas as pd
 import requests
@@ -25,11 +23,11 @@ class colours:
 def starter_message():
     print(
         r"""
-            GeoSearch Mapper
-
-        Version 1.0 by Chris Harris
-              cjharris.co.uk
-            Github: cjharris18
+        Twitter Media Scraper Python3 v1.0
+             ------------------------
+           Version 1.0 by Chris Harris
+                 cjharris.co.uk
+               Github: cjharris18
         """
         )
 
@@ -99,6 +97,8 @@ def get_tweets(twitter_username):
                             return_type = requests.Response,
                             wait_on_rate_limit=True)
         
+    # dynamically grab user id.
+
     # Send the request to the api for the users recent tweets.
     # Academic access is required to do it any other way. We can grab up to 100 tweets.
     tweets = client.get_users_tweets(id=user_id,
@@ -154,13 +154,3 @@ if __name__ == "__main__":
         enter_enviroment_variables()
 
     get_tweets(twitter_uname)
-
-"""
-To Do:
-- Validate Users Exist.
-- Write Twitter API V2 Python Wrapper.
-- Plot points on map.
-- Create Heatmap.
-- Analyse data?
-- Logging
-"""
