@@ -3,7 +3,7 @@
 </h1>
 
 <h3 align="center">
-  Scrape Tweets from Twitter and extract Possible Personally Identifiable Information. 
+  Scrape Tweets and extract Possible Personally Identifiable Information from Twitter accounts.
 </h2>
 
 <br>
