@@ -36,7 +36,7 @@ Running the tool can be done as follows:
 $ python3 twitter-media-scraper-python3.py
 ```
 
-## Usage
+# Usage
 
 As highlighted previously, the most basic usage can be done as follows:
 
