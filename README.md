@@ -27,7 +27,7 @@ $ git clone https://github.com/cjharris18/Twitter-Media-Scraper.git
 From here, enter the repository like so:
 
 ```
-$ cd Twitter-Media-Scraper
+$ cd Twitter-Media-Scraper/
 ```
 
 Running the tool can be done as follows:
