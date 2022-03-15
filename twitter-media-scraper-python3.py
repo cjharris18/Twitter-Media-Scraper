@@ -12,6 +12,7 @@ import os
 import tweepy
 import pandas as pd
 import requests
+import json
 
 # Define colours we will use for text back to the user.
 class colours:
@@ -47,23 +48,23 @@ def prompt_username():
 def check_env_var():
     # If all are present, show a success message.
     if ('CONSUMER_KEY') and ('CONSUMER_SECRET') and ('ACCESS_TOKEN') and ('ACCESS_SECRET') and ('BEARER_TOKEN') in os.environ:
-        print(colours.GREEN + "Consumer Key, Consumer Secret, Access Token, Access Token Secret and Bearer Token Successfully Read." + colours.DEFAULT)
+        print(colours.GREEN + " [✓] Consumer Key, Consumer Secret, Access Token, Access Token Secret and Bearer Token Successfully Read.\n" + colours.DEFAULT)
     else:
         # If they are not, check for what is not present and return an error.
         if ('CONSUMER_KEY') not in os.environ:
-            print(colours.ERROR + "Consumer Key not Found." + colours.DEFAULT)
+            print(colours.ERROR + " [!] Consumer Key not Found.\n" + colours.DEFAULT)
         
         if ('CONSUMER_SECRET') not in os.environ:
-            print(colours.ERROR + "Consumer Secret not Found." + colours.DEFAULT)
+            print(colours.ERROR + " [!] Consumer Secret not Found.\n" + colours.DEFAULT)
 
         if ('ACCESS_TOKEN') not in os.environ:
-            print(colours.ERROR + "Access Token not Found." + colours.DEFAULT)
+            print(colours.ERROR + " [!] Access Token not Found.\n" + colours.DEFAULT)
 
         if ('ACCESS_SECRET') not in os.environ:
-            print(colours.ERROR + "Access Token Secret not Found." + colours.DEFAULT)
+            print(colours.ERROR + " [!] Access Token Secret not Found.\n" + colours.DEFAULT)
 
         if ('BEARER_TOKEN') not in os.environ:
-            print(colours.ERROR + "Bearer Token not Found." + colours.DEFAULT)
+            print(colours.ERROR + " [!] Bearer Token not Found.\n" + colours.DEFAULT)
         
         exit()
 
@@ -95,17 +96,28 @@ def get_client():
                             access_token=access_token, 
                             access_token_secret=access_token_secret, 
                             return_type = requests.Response,
-                            wait_on_rate_limit=True)
+                            wait_on_rate_limit=True) 
     return client
 
 # Get the ID from the username.
 def get_id(client, username):
-    # Use the get_user function to grab the information.
-    user_info = client.get_user(username=username)
-    # Filter out the specific ID that we need.
-    id = user_info.id_str
+    try:
+        # Use the get_user function to grab the information.
+        user = client.get_user(username=username)
 
-    return id
+        # Get the user data in json format.
+        user_data = json.loads(user.content)
+
+        # Filter out the specific ID that we need.
+        user_id = user_data["data"]["id"]
+
+        print(colours.GREEN + " [✓] Username Validated Successfully.\n" + colours.DEFAULT)
+        return user_id
+    
+    # If the user does not exist, then this will error. We can handle this here.
+    except:
+        print(colours.ERROR + " [!] Invalid Username. Please Try Again...\n" + colours.DEFAULT)
+        exit()
     
 def get_tweets(twitter_username):
 
@@ -114,7 +126,7 @@ def get_tweets(twitter_username):
     
     # Call the fucntion to grab the user ID from the username.
     user_id = get_id(client, twitter_username)
-
+    
     # Send the request to the api for the users recent tweets.
     # Academic access is required to do it any other way. We can grab up to 100 tweets.
     tweets = client.get_users_tweets(id=user_id,
@@ -124,7 +136,11 @@ def get_tweets(twitter_username):
     
     # Save the data as a dictionary.
     tweets_dict = tweets.json() 
-    
+
+    # Check if the user wishes to output the data to a file.
+    if args.output:
+        write_file(tweets_dict)
+
     # Extract the "data" value from the dictionary.
     tweets_data = tweets_dict['data'] 
 
@@ -133,13 +149,29 @@ def get_tweets(twitter_username):
 
     print(df)
 
+# Write the JSON tweet data to a file.
+def write_file(tweets_json):
+    # If the file is a directory, an erorr will be thrown as it can not be written to.
+    if os.path.isdir(args.output):
+        print(colours.ERROR + " [!] Specified Output File is an Existing Directory.\n" + colours.DEFAULT)
+    elif os.path.isfile(args.output):
+        # Write to the file by dumping the JSON.
+        with open(args.output, 'w') as file:
+            json.dump(tweets_json, file)
+            print(colours.GREEN + " [✓] Successfully wrote to file.\n" + colours.DEFAULT)
+    # Handle any other errors.
+    else:
+        print(colours.ERROR + " [!] Error Writing to File.\n" + colours.DEFAULT)
+
+
 if __name__ == "__main__":
 
     # Argument Handler.
-    parser = argparse.ArgumentParser(description='Extract and Analyse GeoSocial Data.')
+    parser = argparse.ArgumentParser(description='Extract and Analyse Twitter Data.')
 
     # Allow the user the option to specify a username at the command line.
     parser.add_argument('-t', '--twitter', type=str, help='Specify Twitter Username at the Command Line.')
+    parser.add_argument('-o', '--output', type=str, help='Specify a filename to store the JSON tweet data.')
     
     # Allow the user to bypass entering enviroment variables.
     parser.add_argument('-e','--env', help='Do not prompt for Enviroment Variables.', action='store_true')
@@ -151,12 +183,12 @@ if __name__ == "__main__":
     # Check if the username is specified at the command line or not.
     if args.twitter:
         starter_message()
-        print(colours.GREEN + "Twitter Username Successfully Read from the Command Line." + colours.DEFAULT)
+        print(colours.GREEN + " [✓] Twitter Username Successfully Read from the Command Line.\n" + colours.DEFAULT)
         twitter_uname = args.twitter
     else:
         starter_message()
         twitter_uname = prompt_username()
-        exit()
+        
 
     # If the user wants to specify the enviroment variables, we should ask for them. 
     if args.env == True:
