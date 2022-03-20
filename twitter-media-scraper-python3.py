@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Twitter Media Scraper Python3 v1.0
+Twitter Media Scraper Python3 v1.1
 Created by Chris Harris
 cjharris.co.uk
 GitHub: cjharris18
@@ -32,7 +32,7 @@ def starter_message():
         r"""
         Twitter Media Scraper Python3 v1.0
              ------------------------
-           Version 1.0 by Chris Harris
+           Version 1.1 by Chris Harris
                  cjharris.co.uk
                Github: cjharris18
         """
@@ -280,38 +280,53 @@ def generate_report(emails, mentions, hashtags, urls, ips, twitter_username):
 
     # Create the subheading and show the emails.
     with doc.create(Section("Possible Emails")):
-        for n in range(len(emails)):
-            doc.append(" - " + emails[n] + "\n")
+        if emails:
+            for n in range(len(emails)):
+                doc.append(" - " + emails[n] + "\n")
+        else:
+            doc.append("NOTHING FOUND...\n")
 
     # Create the subheading and show the mentions.
     with doc.create(Section("Possible Mentions")):
-        for n in range(len(mentions)):
-            doc.append(" - " + mentions[n] + "\n")
+        if mentions:
+            for n in range(len(mentions)):
+                doc.append(" - " + mentions[n] + "\n")
+        else:
+            doc.append("NOTHING FOUND...\n")
 
     # Create the subheading and show the hashtags.
     with doc.create(Section("Possible Hashtags")):
-        for n in range(len(hashtags)):
-            doc.append(" - " + hashtags[n] + "\n")
+        if hashtags:
+            for n in range(len(hashtags)):
+                doc.append(" - " + hashtags[n] + "\n")
+        else:
+            doc.append("NOTHING FOUND...\n")
 
     # Validate the URLs.
     all_urls, redirected_urls = validate_urls(urls)
 
     # Create the subheading and show the urls, both successful and not.
     with doc.create(Section("URLs")):
-        doc.append(
-            "URLs for Twitter use their built-in link shortner, as a result, we have checked which redirect to a successful url.\n\n"
-        )
-        for n in range(len(all_urls)):
+        if urls:
             doc.append(
-                "- {0}    Redirects to ---->    {1}\n".format(
-                    all_urls[n], redirected_urls[n]
-                )
+                "URLs for Twitter use their built-in link shortner, as a result, we have checked which redirect to a successful url.\n\n"
             )
+            for n in range(len(all_urls)):
+                doc.append(
+                    "- {0}    Redirects to ---->    {1}\n".format(
+                        all_urls[n], redirected_urls[n]
+                    )
+                )
+            else:
+                doc.append("NOTHING FOUND...\n")
 
     # Create the subheading and show the ips.
     with doc.create(Section("Possible IP Adresses")):
-        for n in range(len(ips)):
-            doc.append(" - " + ips[n] + "\n")
+        if ips:
+            for n in range(len(ips)):
+                doc.append(" - " + ips[n] + "\n")
+        else:
+            doc.append("NOTHING FOUND...\n")
 
     # Be sure to handle any errors here.
     try:
@@ -359,22 +374,31 @@ def display_stdout(emails, mentions, hashtags, urls, ips, twitter_username):
     )
     print(("-" * 60) + "\n")
 
-    # Show the URLs
+    # Show the Emails
     print(colours.BOLD + " Possible Emails Found:\n" + colours.DEFAULT)
-    for n in range(len(emails)):
-        print(" - " + emails[n] + "\n")
+    if emails:
+        for n in range(len(emails)):
+            print(" - " + emails[n] + "\n")
+    else:
+        print(" NOTHING FOUND...\n")
     print("-" * 60)
 
     # Show the Mentions.
     print(colours.BOLD + " Possible Mentions Found:\n" + colours.DEFAULT)
-    for n in range(len(mentions)):
-        print(" - " + mentions[n] + "\n")
+    if mentions:
+        for n in range(len(mentions)):
+            print(" - " + mentions[n] + "\n")
+    else:
+        print(" NOTHING FOUND...\n")
     print("-" * 60)
 
     # Show the Hashtags.
     print(colours.BOLD + " Possible Hashtags Found:\n" + colours.DEFAULT)
-    for n in range(len(hashtags)):
-        print(" - " + hashtags[n] + "\n")
+    if hashtags:
+        for n in range(len(hashtags)):
+            print(" - " + hashtags[n] + "\n")
+    else:
+        print(" NOTHING FOUND...\n")
     print("-" * 60)
 
     # Validate the URLs.
@@ -382,21 +406,27 @@ def display_stdout(emails, mentions, hashtags, urls, ips, twitter_username):
 
     # Show the URLs and their redirects.
     print(colours.BOLD + " Possible URLs Found:" + colours.DEFAULT)
-    print(
-        " URLs for Twitter use their built-in link shortner, as a result, we have checked which redirect to a successful url.\n"
-    )
-    for n in range(len(all_urls)):
+    if urls:
         print(
-            "- {0}    Redirects to ---->    {1}\n".format(
-                all_urls[n], redirected_urls[n]
-            )
+            " URLs for Twitter use their built-in link shortner, as a result, we have checked which redirect to a successful url.\n"
         )
+        for n in range(len(all_urls)):
+            print(
+                "- {0}    Redirects to ---->    {1}\n".format(
+                    all_urls[n], redirected_urls[n]
+                )
+            )
+    else:
+        print(" NOTHING FOUND...\n")
     print("-" * 60)
 
     # Show the ips.
     print(colours.BOLD + " Possible IP Adresses found:\n" + colours.DEFAULT)
-    for n in range(len(ips)):
-        print(" - " + ips[n] + "\n")
+    if ips:
+        for n in range(len(ips)):
+            print(" - " + ips[n] + "\n")
+    else:
+        print(" NOTHING FOUND...\n")
 
 
 if __name__ == "__main__":
