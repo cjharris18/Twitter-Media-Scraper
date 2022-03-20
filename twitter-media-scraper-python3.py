@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Twitter Media Scraper Python3 v1.1
+Twitter Media Scraper Python3 v1.0
 Created by Chris Harris
 cjharris.co.uk
 GitHub: cjharris18
@@ -32,7 +32,7 @@ def starter_message():
         r"""
         Twitter Media Scraper Python3 v1.0
              ------------------------
-           Version 1.1 by Chris Harris
+           Version 1.0 by Chris Harris
                  cjharris.co.uk
                Github: cjharris18
         """
