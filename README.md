@@ -12,11 +12,15 @@
 
 This tool takes a Twitter username and extracts possible PII. It aims to extract the following from tweets:
 
-- Phone Numbers
 - Emails
-- Names
+- Mentions
+- Hashtags
+- URLs
+- IPs
 
-It also extracts any information stored for the username itself, this includes emails and mobile numbers linked.
+For Output, the default generates a LaTex report titled: `report.pdf`, this name can be changed, it can also be directed to `stdout` instead.
+
+Further Development should focus on increasing the number of available information, as well as improving the regex.
 
 # Installation
 
@@ -47,16 +51,21 @@ $ python3 twitter-media-scraper-python3.py
 Using the above command, the user will be prompted for all the fields the tool requires. These can also be specified at the command line:
 
 ```
-$ python3 twitter-media-scraper-python3.py --help
-usage: twitter-media-scraper-python3.py [-h] [-t TWITTER] [-e]
+$ python3 twitter-media-scraper-python3.py -h               
+usage: twitter-media-scraper-python3.py [-h] [-t TWITTER] [-o OUTPUT] [-e] [-r REPORT] [-s]
 
-Extract and Analyse GeoSocial Data.
+Extract and Analyse Tweets for potential PII.
 
 optional arguments:
   -h, --help            show this help message and exit
   -t TWITTER, --twitter TWITTER
                         Specify Twitter Username at the Command Line.
+  -o OUTPUT, --output OUTPUT
+                        Specify a filename to store the JSON tweet data.
   -e, --env             Do not prompt for Enviroment Variables.
+  -r REPORT, --report REPORT
+                        Specify a filename for the report.
+  -s, --stdout          Output the information to stdout, not as a report (the default).
 ```
 
 For getting the required Twitter Keys and Tokens required, you will need a Twitter Developer account. Please follow [this link](https://developer.twitter.com/en/docs/twitter-api/getting-started/getting-access-to-the-twitter-api) for more. The tool requires the following:
