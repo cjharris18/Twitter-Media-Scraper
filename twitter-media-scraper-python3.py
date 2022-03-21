@@ -195,9 +195,6 @@ def get_tweets(twitter_username):
 # Here we grab the information we want from the tweets.
 def grab_information(tweet_data):
 
-    # Lets have a check for if we find anything or not.
-    information = False
-
     # we need to grab the text itself, its stored as an array of dictionaries. Type to string.
     str_tweet_data = [x["text"] for x in tweet_data]
 
