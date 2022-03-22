@@ -5,7 +5,7 @@
 <p align="center">
 <img alt="Supported Platforms" src="https://img.shields.io/badge/Platform-Linux-blue?style=for-the-badge">
 <img alt="Language" src="https://img.shields.io/badge/Language-Python3-green?style=for-the-badge">
-<img alt="GitHub file size in bytes" src="https://img.shields.io/github/size/cjharris18/Twitter-Media-Scraper/twitter-media-scraper-python3.py?color=brightgreen&style=for-the-badge">
+<img alt="GitHub file size in bytes" src="https://img.shields.io/github/size/cjharris18/Twitter-Media-Scraper/twitter-media-scraper.py?color=brightgreen&style=for-the-badge">
 <img alt="License" src="https://img.shields.io/badge/License-MIT-orange?style=for-the-badge">
 </p>
 
@@ -49,7 +49,7 @@ $ pip3 install -r requirements.txt
 Running the tool can be done as follows:
 
 ```
-$ python3 twitter-media-scraper-python3.py
+$ python3 twitter-media-scraper.py
 ```
 
 # Usage
@@ -57,14 +57,14 @@ $ python3 twitter-media-scraper-python3.py
 As highlighted previously, the most basic usage can be done as follows:
 
 ```
-$ python3 twitter-media-scraper-python3.py
+$ python3 twitter-media-scraper.py
 ```
 
 Using the above command, the user will be prompted for all the fields the tool requires. These can also be specified at the command line:
 
 ```
-$ python3 twitter-media-scraper-python3.py -h               
-usage: twitter-media-scraper-python3.py [-h] [-t TWITTER] [-o OUTPUT] [-e] [-r REPORT] [-s]
+$ python3 twitter-media-scraper.py -h               
+usage: twitter-media-scraper.py [-h] [-t TWITTER] [-o OUTPUT] [-e] [-r REPORT] [-s]
 
 Extract and Analyse Tweets for potential PII.
 

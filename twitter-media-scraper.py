@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 
 """
-Twitter Media Scraper Python3 v1.0
+Twitter Media Scraper v1.1
 Created by Chris Harris
 cjharris.co.uk
 GitHub: cjharris18
 """
 
-import argparse
-import os
-import tweepy
-import requests
-import json
-import regex
-import requests
+from argparse import ArgumentParser
+from os import system, environ, getenv, path
+from tweepy import Client
+from requests import head, Response
+from json import loads, dump
+from regex import compile
 from pylatex import Document, Section, Command, NoEscape, LargeText
 from datetime import date
 
@@ -30,26 +29,13 @@ class colours:
 def starter_message():
     print(
         r"""
-        Twitter Media Scraper Python3 v1.0
+              Twitter Media Scraper
              ------------------------
-           Version 1.0 by Chris Harris
+           Version 1.1 by Chris Harris
                  cjharris.co.uk
                Github: cjharris18
         """
     )
-
-
-# Take the username from the user if not already specified on the command line.
-def prompt_username():
-    error = True
-
-    while error == True:
-        # Loop until an input is specified that is valid.
-        twitter_uname == input("Please enter your Twitter Username: ")
-        error = False
-
-        # Later here, validate the account exists.
-        return twitter_uname
 
 
 # Function to validate that the enviroment variables exist. If not, we will error and exit.
@@ -60,32 +46,35 @@ def check_env_var():
         and ("CONSUMER_SECRET")
         and ("ACCESS_TOKEN")
         and ("ACCESS_SECRET")
-        and ("BEARER_TOKEN") in os.environ
+        and ("BEARER_TOKEN") in environ
     ):
-        print(
-            colours.GREEN
-            + " [✓] Consumer Key, Consumer Secret, Access Token, Access Token Secret and Bearer Token Successfully Read."
-            + colours.DEFAULT
-        )
+        # Check if the verbose flag is set.
+        if args.verbose:
+            print(
+                colours.GREEN
+                + " [✓] Consumer Key, Consumer Secret, Access Token, Access Token Secret and Bearer Token Successfully Read."
+                + colours.DEFAULT
+            )
+
     else:
         # If they are not, check for what is not present and return an error.
-        if ("CONSUMER_KEY") not in os.environ:
+        if ("CONSUMER_KEY") not in environ:
             print(colours.ERROR + " [!] Consumer Key not Found..." + colours.DEFAULT)
 
-        if ("CONSUMER_SECRET") not in os.environ:
+        if ("CONSUMER_SECRET") not in environ:
             print(colours.ERROR + " [!] Consumer Secret not Found..." + colours.DEFAULT)
 
-        if ("ACCESS_TOKEN") not in os.environ:
+        if ("ACCESS_TOKEN") not in environ:
             print(colours.ERROR + " [!] Access Token not Found..." + colours.DEFAULT)
 
-        if ("ACCESS_SECRET") not in os.environ:
+        if ("ACCESS_SECRET") not in environ:
             print(
                 colours.ERROR
                 + " [!] Access Token Secret not Found..."
                 + colours.DEFAULT
             )
 
-        if ("BEARER_TOKEN") not in os.environ:
+        if ("BEARER_TOKEN") not in environ:
             print(colours.ERROR + " [!] Bearer Token not Found..." + colours.DEFAULT)
 
         exit()
@@ -93,34 +82,27 @@ def check_env_var():
 
 # Allow the user the options to enter the enviroment variables.
 def enter_enviroment_variables():
-    os.system("clear")
+    system("clear")
     starter_message()
 
-    os.environ["CONSUMER_KEY"] = input("Please Enter your Consumer Key: ")
-    os.environ["CONSUMER_SECRET"] = input("Please Enter your Consumer Secret: ")
+    environ["CONSUMER_KEY"] = input("Please Enter your Consumer Key: ")
+    environ["CONSUMER_SECRET"] = input("Please Enter your Consumer Secret: ")
 
-    os.environ["ACCESS_TOKEN"] = input("Please Enter your Access Token: ")
-    os.environ["ACCESS_SECRET"] = input("Please Enter your Access Token Secret: ")
+    environ["ACCESS_TOKEN"] = input("Please Enter your Access Token: ")
+    environ["ACCESS_SECRET"] = input("Please Enter your Access Token Secret: ")
 
-    os.environ["BEARER_TOKEN"] = input("Please Enter the your Bearer Token: ")
+    environ["BEARER_TOKEN"] = input("Please Enter the your Bearer Token: ")
 
 
 def get_client():
-    # Accessing our Enviroment variables.
-    access_token = os.getenv("ACCESS_TOKEN")
-    access_token_secret = os.getenv("ACCESS_SECRET")
-    consumer_key = os.getenv("CONSUMER_KEY")
-    consumer_secret = os.getenv("CONSUMER_SECRET")
-    bearer_token = os.getenv("BEARER_TOKEN")
-
     # Authorise ourselves with the API.
-    client = tweepy.Client(
-        bearer_token=bearer_token,
-        consumer_key=consumer_key,
-        consumer_secret=consumer_secret,
-        access_token=access_token,
-        access_token_secret=access_token_secret,
-        return_type=requests.Response,
+    client = Client(
+        bearer_token=getenv("BEARER_TOKEN"),
+        consumer_key=getenv("CONSUMER_KEY"),
+        consumer_secret=getenv("CONSUMER_SECRET"),
+        access_token=getenv("ACCESS_TOKEN"),
+        access_token_secret=getenv("ACCESS_SECRET"),
+        return_type=Response,
         wait_on_rate_limit=True,
     )
 
@@ -134,12 +116,19 @@ def get_id(client, username):
         user = client.get_user(username=username)
 
         # Get the user data in json format.
-        user_data = json.loads(user.content)
+        user_data = loads(user.content)
 
         # Filter out the specific ID that we need.
         user_id = user_data["data"]["id"]
 
-        print(colours.GREEN + " [✓] Username Validated Successfully." + colours.DEFAULT)
+        # Check if the verbose flag is set.
+        if args.verbose:
+            print(
+                colours.GREEN
+                + " [✓] Username Validated Successfully."
+                + colours.DEFAULT
+            )
+
         return user_id
 
     # If the user does not exist, then this will error. We can handle this here.
@@ -149,13 +138,14 @@ def get_id(client, username):
             + " [!] Invalid Username. Please Try Again..."
             + colours.DEFAULT
         )
+
         exit()
 
 
 # Write the JSON tweet data to a file.
 def write_file(tweets_json):
     # If the file is a directory, an erorr will be thrown as it can not be written to.
-    if os.path.isdir(args.output):
+    if path.isdir(args.output):
         print(
             colours.ERROR
             + " [!] Specified Output File is an Existing Directory..."
@@ -164,8 +154,13 @@ def write_file(tweets_json):
     else:
         # Write to the file by dumping the JSON.
         with open(args.output, "w") as file:
-            json.dump(tweets_json, file)
-            print(colours.GREEN + " [✓] Successfully wrote to file." + colours.DEFAULT)
+            dump(tweets_json, file)
+
+            # Check if the verbose flag is set.
+            if args.verbose:
+                print(
+                    colours.GREEN + " [✓] Successfully wrote to file." + colours.DEFAULT
+                )
 
 
 # Get the raw tweets from the user.
@@ -185,6 +180,7 @@ def get_tweets(twitter_username):
     tweets_dict = tweets.json()
 
     tweets_data = tweets_dict["data"]
+
     # Check if the user wishes to output the data to a file.
     if args.output:
         write_file(tweets_data)
@@ -226,7 +222,7 @@ def grab_information(tweet_data):
 # Grab the data from the tweets using regex.
 def grab_info_regex(tweet_data, regex_str):
     # apply the regular expression and add the results to a list.
-    expression = regex.compile(regex_str)
+    expression = compile(regex_str)
     matched_regex = [y for x in tweet_data for y in expression.findall(x)]
 
     return matched_regex
@@ -242,13 +238,13 @@ def validate_urls(all_urls):
     for new_url in all_urls:
         try:
             # This grabs the redirect urls.
-            url_response = requests.head(new_url, allow_redirects=True)
+            url_response = head(new_url, allow_redirects=True)
             redirected_urls.append(url_response.url)
         except:
             # If they dont redirect, there is an error.
             redirected_urls.append("No Successful URL Found.")
 
-    return all_urls, redirected_urls
+    return redirected_urls
 
 
 # We shall generate a report to display our output to the user.
@@ -300,7 +296,7 @@ def generate_report(emails, mentions, hashtags, urls, ips, twitter_username):
             doc.append("NOTHING FOUND...\n")
 
     # Validate the URLs.
-    all_urls, redirected_urls = validate_urls(urls)
+    redirected_urls = validate_urls(urls)
 
     # Create the subheading and show the urls, both successful and not.
     with doc.create(Section("URLs")):
@@ -308,10 +304,10 @@ def generate_report(emails, mentions, hashtags, urls, ips, twitter_username):
             doc.append(
                 "URLs for Twitter use their built-in link shortner, as a result, we have checked which redirect to a successful url.\n\n"
             )
-            for n in range(len(all_urls)):
+            for n in range(len(urls)):
                 doc.append(
                     "- {0}    Redirects to ---->    {1}\n".format(
-                        all_urls[n], redirected_urls[n]
+                        urls[n], redirected_urls[n]
                     )
                 )
             else:
@@ -330,13 +326,19 @@ def generate_report(emails, mentions, hashtags, urls, ips, twitter_username):
         # Check if the user has specified a name for the file, if not, use a default.
         if args.report:
             doc.generate_pdf(args.report.split(".")[0], clean_tex=True)
-            print(
-                colours.GREEN
-                + " [✓] Successfully Generated the Report to '{0}'.".format(args.report)
-                + colours.DEFAULT
-            )
+
+            # Check if the verbose flag is set.
+            if args.verbose:
+                print(
+                    colours.GREEN
+                    + " [✓] Successfully Generated the Report to '{0}'.".format(
+                        args.report
+                    )
+                    + colours.DEFAULT
+                )
         else:
             doc.generate_pdf("report", clean_tex=True)
+
             print(
                 colours.GREEN
                 + " [✓] Successfully Generated the Report to 'report.pdf'."
@@ -352,11 +354,11 @@ def display_stdout(emails, mentions, hashtags, urls, ips, twitter_username):
     # Generate our title, date and subtitle.
     print("\n" + ("-" * 60))
     print(
-        colours.BOLD + (" " * 15) + "Twitter Media Scraper Results\n" + colours.DEFAULT
+        colours.BOLD + (" " * 14) + "Twitter Media Scraper Results\n" + colours.DEFAULT
     )
     print(
         colours.BOLD
-        + (" " * 20)
+        + (" " * 16)
         + "Date of Search: {0}".format(date.today())
         + colours.DEFAULT
     )
@@ -399,7 +401,7 @@ def display_stdout(emails, mentions, hashtags, urls, ips, twitter_username):
     print("-" * 60)
 
     # Validate the URLs.
-    all_urls, redirected_urls = validate_urls(urls)
+    redirected_urls = validate_urls(urls)
 
     # Show the URLs and their redirects.
     print(colours.BOLD + " Possible URLs Found:" + colours.DEFAULT)
@@ -407,10 +409,10 @@ def display_stdout(emails, mentions, hashtags, urls, ips, twitter_username):
         print(
             " URLs for Twitter use their built-in link shortner, as a result, we have checked which redirect to a successful url.\n"
         )
-        for n in range(len(all_urls)):
+        for n in range(len(urls)):
             print(
                 "- {0}    Redirects to ---->    {1}\n".format(
-                    all_urls[n], redirected_urls[n]
+                    urls[n], redirected_urls[n]
                 )
             )
     else:
@@ -429,9 +431,7 @@ def display_stdout(emails, mentions, hashtags, urls, ips, twitter_username):
 if __name__ == "__main__":
 
     # Argument Handler.
-    parser = argparse.ArgumentParser(
-        description="Extract and Analyse Tweets for potential PII."
-    )
+    parser = ArgumentParser(description="Extract and Analyse Tweets for potential PII.")
 
     # Allow the user the option to specify a username at the command line.
     parser.add_argument(
@@ -469,6 +469,13 @@ if __name__ == "__main__":
         action="store_true",
     )
 
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Provide more verbose output from the program.",
+        action="store_true",
+    )
+
     args = parser.parse_args()
 
     twitter_uname = ""
@@ -476,15 +483,25 @@ if __name__ == "__main__":
     # Check if the username is specified at the command line or not.
     if args.twitter:
         starter_message()
-        print(
-            colours.GREEN
-            + " [✓] Twitter Username Successfully Read from the Command Line."
-            + colours.DEFAULT
-        )
+
+        # Check if the verbose flag is set.
+        if args.verbose:
+            print(
+                colours.GREEN
+                + " [✓] Twitter Username Successfully Read from the Command Line."
+                + colours.DEFAULT
+            )
+
         twitter_uname = args.twitter
     else:
         starter_message()
-        twitter_uname = prompt_username()
+        # Lets handle errors with the input.
+        try:
+            twitter_uname == input("Please enter your Twitter Username: ")
+        except:
+            print(
+                colours.ERROR + " [!] Error Taking in the Username..." + colours.DEFAULT
+            )
 
     # If the user wants to specify the enviroment variables, we should ask for them.
     if args.env == True:
