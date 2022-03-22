@@ -33,6 +33,11 @@ From here, enter the repository like so:
 ```
 $ cd Twitter-Media-Scraper/
 ```
+You will want to install any project dependencies, you can do this by running the following:
+
+```
+$ pip3 install -r requirements.txt
+```
 
 Running the tool can be done as follows:
 
