@@ -2,6 +2,13 @@
   Twitter Media Scraper
 </h1>
 
+<p align="center">
+<img alt="Supported Platforms" src="https://img.shields.io/badge/Platform-Linux-blue?style=for-the-badge">
+<img alt="Language" src="https://img.shields.io/badge/Language-Python3-green?style=for-the-badge">
+<img alt="GitHub file size in bytes" src="https://img.shields.io/github/size/cjharris18/Twitter-Media-Scraper/twitter-media-scraper-python3.py?color=brightgreen&style=for-the-badge">
+<img alt="License" src="https://img.shields.io/badge/License-MIT-orange?style=for-the-badge">
+</p>
+
 <h3 align="center">
   Scrape Tweets and extract Possible Personally Identifiable Information from Twitter accounts.
 </h2>
