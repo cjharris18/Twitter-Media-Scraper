@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Twitter Media Scraper v1.1
+Twitter Media Scraper v1.2
 Created by Chris Harris
 cjharris.co.uk
 GitHub: cjharris18
@@ -31,7 +31,7 @@ def starter_message():
         r"""
               Twitter Media Scraper
              ------------------------
-           Version 1.1 by Chris Harris
+           Version 1.2 by Chris Harris
                  cjharris.co.uk
                Github: cjharris18
         """
@@ -94,17 +94,27 @@ def enter_enviroment_variables():
     environ["BEARER_TOKEN"] = input("Please Enter the your Bearer Token: ")
 
 
+# Authentication with the Twitter API using the Tweepy Client object.
 def get_client():
     # Authorise ourselves with the API.
-    client = Client(
-        bearer_token=getenv("BEARER_TOKEN"),
-        consumer_key=getenv("CONSUMER_KEY"),
-        consumer_secret=getenv("CONSUMER_SECRET"),
-        access_token=getenv("ACCESS_TOKEN"),
-        access_token_secret=getenv("ACCESS_SECRET"),
-        return_type=Response,
-        wait_on_rate_limit=True,
-    )
+    try:
+        client = Client(
+            bearer_token=getenv("BEARER_TOKEN"),
+            consumer_key=getenv("CONSUMER_KEY"),
+            consumer_secret=getenv("CONSUMER_SECRET"),
+            access_token=getenv("ACCESS_TOKEN"),
+            access_token_secret=getenv("ACCESS_SECRET"),
+            return_type=Response,
+            wait_on_rate_limit=True,
+        )
+
+    except:
+        print(
+            colours.ERROR
+            + " [!] Error Authenticating, Check your API Credentials..."
+            + colours.DEFAULT
+        )
+        exit()
 
     return client
 
